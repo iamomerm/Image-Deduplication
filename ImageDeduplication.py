@@ -16,7 +16,7 @@ SUFFIXES = ['.JPEG','.JPG','.PNG','.BMP']
 directory = input('Enter Directory: ').strip()
 
 if os.path.isdir(directory):
-    #Time Stamp Start (Process Duration)
+    # Time Stamp Start (Process Duration)
     pStart = datetime.now().timestamp()
 	
     img_files = [x for x in os.listdir(directory) if Path(x).suffix.upper() in SUFFIXES]
@@ -37,7 +37,7 @@ if os.path.isdir(directory):
     with TPE(max_workers=1024) as executor:
         executor.map(deduplicate, img_files)
 
-    #Time Stamp End (Process Duration)
+    # Time Stamp End (Process Duration)
     pEnd = datetime.now().timestamp()
 
     print('Removed:')
