@@ -1,4 +1,4 @@
-import os
+from os import listdir, path, remove
 from datetime import datetime
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor as TPE
@@ -12,26 +12,26 @@ class SingleSet(set):
             raise DuplicateKeyError()
         super().add(value)
 
-SUFFIXES = ['.JPEG','.JPG','.PNG','.BMP']
+SUFFIXES = ['.JPEG', '.JPG', '.PNG', '.BMP']
 directory = input('Enter Directory: ').strip()
 
-if os.path.isdir(directory):
+if path.isdir(directory):
     # Time Stamp Start (Process Duration)
     pStart = datetime.now().timestamp()
 
     globals()['hashes'] = SingleSet()
 	
-    img_files = [x for x in os.listdir(directory) if Path(x).suffix.upper() in SUFFIXES]
+    img_files = [x for x in listdir(directory) if Path(x).suffix.upper() in SUFFIXES]
     print(f'Found {len(img_files)} Images')
 
     def deduplicate(r_file):
-        r_path = os.path.join(directory, r_file)
+        r_path = path.join(directory, r_file)
         _hash = hash(frozenset(Image.open(r_path).getdata()))
         try:
             globals()['hashes'].add(_hash)
         except DuplicateKeyError:
             print(f'{r_path} Removed')
-            os.remove(r_path)
+            remove(r_path)
             
     with TPE(max_workers=1024) as executor:
         executor.map(deduplicate, img_files)
