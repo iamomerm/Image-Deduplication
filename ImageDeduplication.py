@@ -18,12 +18,11 @@ directory = input('Enter Directory: ').strip()
 if os.path.isdir(directory):
     # Time Stamp Start (Process Duration)
     pStart = datetime.now().timestamp()
+
+    globals()['hashes'] = SingleSet()
 	
     img_files = [x for x in os.listdir(directory) if Path(x).suffix.upper() in SUFFIXES]
     print(f'Found {len(img_files)} Images')
-
-    globals()['hashes'] = SingleSet()
-    globals()['removed'] = set()
 
     def deduplicate(r_file):
         r_path = os.path.join(directory, r_file)
@@ -31,7 +30,7 @@ if os.path.isdir(directory):
         try:
             globals()['hashes'].add(_hash)
         except DuplicateKeyError:
-            globals()['removed'].add(r_file)
+            print(f'{r_path} Removed')
             os.remove(r_path)
             
     with TPE(max_workers=1024) as executor:
@@ -40,9 +39,6 @@ if os.path.isdir(directory):
     # Time Stamp End (Process Duration)
     pEnd = datetime.now().timestamp()
 
-    print('Removed:')
-    [print(f'{idx}. x{x}') for idx, x in enumerate(globals()['removed'])]
-    print(f'Duration: {pEnd - pStart} Seconds')
-    print('Finished...')
+    print(f'Finished, Duration: {pEnd - pStart} Seconds')
 else:
     print(f'Invalid Directory: {directory}')
